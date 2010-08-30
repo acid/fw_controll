@@ -66,20 +66,21 @@ module FwControll
       result = {}
       actual_chain = ""
   
-      ports = `sudo #{FwControll.config.command} -L #{chain} -n`.each do |x|
+      ports = `sudo #{FwControll.config.command} -L #{chain} -n --line-numbers`.each do |x|
         case x
         when /^Chain/ # a new Chain begin
           result.store(x.split[1], [])
           actual_chain = x.split[1]
-        when /^target*/ # discard declarative rows
+        when /^num*/ # discard declarative rows
         else
           rule = x.split
           unless rule.empty? # discard empty rows
-            result[actual_chain] << { :target => rule[0],
-                                      :proto  => rule[1],
-                                      :source => rule[3],
-                                      :dest   => rule[4],
-                                      :opts   => rule[5],
+            result[actual_chain] << { :num    => rule[0],
+                                      :target => rule[1],
+                                      :proto  => rule[2],
+                                      :source => rule[4],
+                                      :dest   => rule[5],
+                                      :opts   => rule[6,rule.length-7],
                                       :raw    => x
                                     }
           end
