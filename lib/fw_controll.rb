@@ -6,7 +6,7 @@ module FwControll
     :proto          => 'tcp',
     :dest           => nil,
     :source         => nil,
-    :jump           => nil,
+    :target         => nil,
     :in_interface   => nil,
     :out_interface  => nil,
     :dport          => nil,
@@ -69,8 +69,8 @@ module FwControll
       ports = `sudo #{FwControll.config.command} -L #{chain} -n --line-numbers`.each do |x|
         case x
         when /^Chain/ # a new Chain begin
-          result.store(x.split[1], [])
           actual_chain = x.split[1]
+          result.store(actual_chain, [])
         when /^num*/ # discard declarative rows
         else
           rule = x.split
@@ -96,7 +96,7 @@ module FwControll
       FwControll.options_switches.each_key do |k|
         cmd << " #{FwControll.options_switches[k]} #{options[k].to_s} " unless options[k].nil?
       end
-      cmd << " -j #{FwControll.fw_targets[options[:jump]]} " unless options[:jump].nil?
+      cmd << " -j #{FwControll.fw_targets[options[:target]]} " unless options[:target].nil?
       cmd << options[:options] unless options[:options].nil?
       `#{cmd}`
     end
