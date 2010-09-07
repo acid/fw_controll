@@ -96,7 +96,7 @@ module FwControll
         options = options.symbolize_keys.reverse_merge FwControll.cmd_options
         
         cmd = "sudo #{FwControll.config.command} -t #{options[:table]} #{FwControll.fw_actions[options[:action]]} "
-        cmd << " #{chain} #{options[:chain]}" unless options[:chain].nil?
+        cmd << " #{options[:chain]} " unless options[:chain].nil?
         FwControll.options_switches.each_key do |k|
           cmd << " #{FwControll.options_switches[k]} #{options[k].to_s} " unless options[k].nil?
         end
