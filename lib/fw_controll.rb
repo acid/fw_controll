@@ -3,6 +3,7 @@ module FwControll
   @@cmd_options = {
     :table          => "filter",
     :action         => :insert,
+    :chain          => nil,
     :proto          => nil,
     :dest           => nil,
     :source         => nil,
@@ -90,16 +91,21 @@ module FwControll
       result
     end
 
-    def fw_cmd chain, options = {}
-      options = options.symbolize_keys.reverse_merge FwControll.cmd_options
-      
-      cmd = "sudo #{FwControll.config.command} -t #{options[:table]} #{FwControll.fw_actions[options[:action]]} #{chain} -p #{options[:proto]}"
-      FwControll.options_switches.each_key do |k|
-        cmd << " #{FwControll.options_switches[k]} #{options[k].to_s} " unless options[k].nil?
+    def fw_cmd options
+      if options.is_a? Hash
+        options = options.symbolize_keys.reverse_merge FwControll.cmd_options
+        
+        cmd = "sudo #{FwControll.config.command} -t #{options[:table]} #{FwControll.fw_actions[options[:action]]} "
+        cmd << " #{chain} #{options[:chain]}" unless options[:chain].nil?
+        FwControll.options_switches.each_key do |k|
+          cmd << " #{FwControll.options_switches[k]} #{options[k].to_s} " unless options[k].nil?
+        end
+        cmd << " -j #{FwControll.fw_targets[options[:target]]} " unless options[:target].nil?
+        cmd << options[:options] unless options[:options].nil?
+        `#{cmd}`
+      else
+        raise "thou shall only send Hashes to me!"
       end
-      cmd << " -j #{FwControll.fw_targets[options[:target]]} " unless options[:target].nil?
-      cmd << options[:options] unless options[:options].nil?
-      `#{cmd}`
     end
   end
 
