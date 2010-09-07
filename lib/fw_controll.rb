@@ -2,8 +2,8 @@
 module FwControll
   @@cmd_options = {
     :table          => "filter",
-    :action         => :include,
-    :proto          => 'tcp',
+    :action         => :insert,
+    :proto          => nil,
     :dest           => nil,
     :source         => nil,
     :target         => nil,
@@ -16,7 +16,7 @@ module FwControll
   mattr_reader :cmd_options
 
   @@fw_actions = {
-    :include  => "-I",
+    :insert   => "-I",
     :delete   => "-D",
     :zero     => "-Z",
     :flush    => "-F",
@@ -35,6 +35,7 @@ module FwControll
   mattr_reader :fw_targets
 
   @@options_switches = {
+    :proto          => '-p',
     :source         => '-s',
     :dest           => '-d',
     :in_interface   => '-i',
